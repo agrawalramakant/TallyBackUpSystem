@@ -1,0 +1,12 @@
+spark-warehouse
+.idea
+.DS_Store/
+target/
+*.iml
+metastore_db
+aws.conf
+gcp_*.conf
+derby.log
+dist/
+build/
+workspace.xml
