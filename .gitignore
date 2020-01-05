@@ -10,3 +10,4 @@ derby.log
 dist/
 build/
 workspace.xml
+*.spec

@@ -168,13 +168,13 @@ class BackUpTally(Frame):
     def logic(company_nr, is_all, master):
         now = datetime.datetime.now()
         original_loc = setup_map['tally_path'].get()
-        back_up_stem = str(now.year) + os.sep + str(now.month) + os.sep + str(now.day)
-        back_up_folder = setup_map['tally_back_path'].get() + os.sep + back_up_stem
-        back_up_ext_folder = setup_map['tally_back_ext_path'].get() + os.sep + back_up_stem
+        back_up_stem = os.path.join(str(now.year), str(now.month), str(now.day))
+        back_up_folder = os.path.join(setup_map['tally_back_path'].get(), back_up_stem)
+        back_up_ext_folder = os.path.join(setup_map['tally_back_ext_path'].get(), back_up_stem)
         if not is_all:
             if TallyManagementApp.is_valid_company_nr(company_nr):
-                original_loc = original_loc + os.sep + company_nr
-                back_up_suffix = company_nr + os.sep + company_nr
+                original_loc = os.path.join(original_loc, company_nr)
+                back_up_suffix = os.path.join(company_nr, company_nr)
                 back_up_folder = back_up_folder + "_" + back_up_suffix
                 back_up_ext_folder = back_up_ext_folder + "_" + back_up_suffix
             else:
@@ -217,10 +217,10 @@ class ImportCompany(Frame):
 
     @staticmethod
     def logic(company_path, is_overwrite, master):
-        company_nr = company_path.split(os.sep)[-1]
+        company_nr = os.path.split(company_path)[1]
         if not is_overwrite:
             company_nr = "99" + company_nr[2:]
-        import_path = setup_map['tally_path'].get() + os.sep + company_nr
+        import_path = os.path.join(setup_map['tally_path'].get(), company_nr)
 
         TallyManagementApp.copy_folder(company_path, import_path)
         master.switch_frame(StartPage)
@@ -256,10 +256,10 @@ class FinalizeCompany(Frame):
 
     @staticmethod
     def logic(company_name, master):
-        company_location = setup_map['tally_path'].get() + os.sep + company_name
+        company_location = os.path.join(setup_map['tally_path'].get(), company_name)
         year = company_name[0:2]
         accounting_year = "20" + year + "-" + str(int(year) + 1)
-        final_account_loc = setup_map['final_acc'].get() + os.sep + accounting_year + os.sep + company_name
+        final_account_loc = os.path.join(setup_map['final_acc'].get(), accounting_year, company_name)
 
         TallyManagementApp.copy_folder(company_location, final_account_loc)
         master.switch_frame(StartPage)
@@ -294,7 +294,7 @@ class AddCompany(Frame):
 
     @staticmethod
     def logic(company_name, company_nr, master):
-        default_company_number = setup_map['default_tally_acc']
+        default_company_number = setup_map['default_tally_acc'].get()
         if TallyManagementApp.is_valid_company_nr(company_nr):
             if TallyManagementApp.company_already_exists(default_company_number):
                 status = RenameCompany.logic(default_company_number, company_nr, master)
@@ -345,7 +345,7 @@ class RenameCompany(Frame):
                         master.log("Sorry!! The company " + new_company + " already exists")
                         return False
                     else:
-                        os.rename(setup_map['tally_path'].get() + os.sep + old_company, setup_map['tally_path'].get() + os.sep + new_company)
+                        os.rename(os.path.join(setup_map['tally_path'].get(), old_company), os.path.join(setup_map['tally_path'].get(), new_company))
                         master.log("Company number renamed from " + old_company + " to " + new_company)
                 else:
                     master.log("Sorry!! The new company number is not 5 digits")
@@ -386,11 +386,11 @@ class BackUpDocuments(Frame):
         back_up_location = setup_map['doc_back_path'].get()
         today = date.today()
         if is_all:
-            back_up_location = back_up_location + os.sep + str(today)
+            back_up_location = os.path.join(back_up_location, str(today))
             TallyManagementApp.copy_folder(original_location, back_up_location)
         else:
-            original_file_location = original_location + os.sep + document
-            back_up_location = back_up_location + os.sep + str(today) + "-" + document.split(".")[0]
+            original_file_location = os.path.join(original_location, document)
+            back_up_location = os.path.join(back_up_location, str(today) + "-" + document.split(".")[0])
             TallyManagementApp.copy_file(original_file_location, back_up_location)
         master.log("Back up taken at " + back_up_location)
 
