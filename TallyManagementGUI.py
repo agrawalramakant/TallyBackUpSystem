@@ -6,6 +6,7 @@ from distutils.file_util import copy_file
 import datetime
 from datetime import date
 import json
+import re
 
 
 five_digit_regex = r"^[0-9]{5}$"
